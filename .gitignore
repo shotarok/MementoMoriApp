@@ -1,0 +1,24 @@
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+
+# Build products
+build/
+DerivedData/
+
+# CocoaPods / SPM
+Pods/
+.build/
+
+# Xcode workspace settings
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# OS files
+.DS_Store
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
