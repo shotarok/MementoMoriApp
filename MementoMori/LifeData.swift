@@ -48,7 +48,7 @@ struct LifeData: Codable {
 class LifeDataStore {
     static let shared = LifeDataStore()
 
-    static let appGroupIdentifier = "group.com.yourname.mementomori"
+    static let appGroupIdentifier = "group.com.shotarok.mementomori"
 
     private let userDefaults: UserDefaults
     private let key = "lifeData"
