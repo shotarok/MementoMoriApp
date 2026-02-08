@@ -4,10 +4,11 @@ import WidgetKit
 struct ContentView: View {
     @State private var birthDate: Date = LifeDataStore.shared.lifeData.birthDate
     @State private var lifeExpectancy: Int = LifeDataStore.shared.lifeData.lifeExpectancy
+    @State private var decimalPlaces: Int = LifeDataStore.shared.lifeData.decimalPlaces
     @State private var displayMode: CalendarDisplayMode = .years
-    
+
     private var lifeData: LifeData {
-        LifeData(birthDate: birthDate, lifeExpectancy: lifeExpectancy)
+        LifeData(birthDate: birthDate, lifeExpectancy: lifeExpectancy, decimalPlaces: decimalPlaces)
     }
     
     var body: some View {
@@ -58,7 +59,7 @@ struct ContentView: View {
                 }
                 .frame(height: 8)
                 
-                Text("\(Int(lifeData.percentageLived * 100))% of your life")
+                Text("\(lifeData.formattedPercentageLived)% of your life")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -140,6 +141,18 @@ struct ContentView: View {
                     Spacer()
                     Stepper("\(lifeExpectancy) years", value: $lifeExpectancy, in: 50...120)
                         .onChange(of: lifeExpectancy) { _, newValue in
+                            saveData()
+                        }
+                }
+
+                Divider()
+
+                // Decimal Places
+                HStack {
+                    Text("Percentage Decimals")
+                    Spacer()
+                    Stepper("\(decimalPlaces)", value: $decimalPlaces, in: 0...5)
+                        .onChange(of: decimalPlaces) { _, newValue in
                             saveData()
                         }
                 }

@@ -5,14 +5,30 @@ import Foundation
 struct LifeData: Codable {
     var birthDate: Date
     var lifeExpectancy: Int // in years
-    
+    var decimalPlaces: Int // 0 (integer) to 5
+
     static let defaultLifeExpectancy = 80
-    
+
     static var `default`: LifeData {
         LifeData(
             birthDate: Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date(),
-            lifeExpectancy: defaultLifeExpectancy
+            lifeExpectancy: defaultLifeExpectancy,
+            decimalPlaces: 0
         )
+    }
+
+    // Custom decoding for backward compatibility (decimalPlaces may be absent)
+    init(birthDate: Date, lifeExpectancy: Int, decimalPlaces: Int = 0) {
+        self.birthDate = birthDate
+        self.lifeExpectancy = lifeExpectancy
+        self.decimalPlaces = decimalPlaces
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        birthDate = try container.decode(Date.self, forKey: .birthDate)
+        lifeExpectancy = try container.decode(Int.self, forKey: .lifeExpectancy)
+        decimalPlaces = try container.decodeIfPresent(Int.self, forKey: .decimalPlaces) ?? 0
     }
     
     // MARK: - Calculations
@@ -34,6 +50,11 @@ struct LifeData: Codable {
     var percentageLived: Double {
         guard totalWeeks > 0 else { return 0 }
         return min(1.0, Double(weeksLived) / Double(totalWeeks))
+    }
+
+    var formattedPercentageLived: String {
+        let value = percentageLived * 100
+        return String(format: "%.\(decimalPlaces)f", value)
     }
     
     var currentAge: Double {
