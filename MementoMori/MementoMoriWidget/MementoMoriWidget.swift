@@ -137,9 +137,9 @@ struct MediumWidgetView: View {
     }
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             // Left: Stats
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text("MEMENTO MORI")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(.secondary)
@@ -150,30 +150,33 @@ struct MediumWidgetView: View {
                 Spacer()
 
                 Text("\(Int(lifeData.percentageLived * 100))%")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: 24, weight: .bold))
                 Text("lived")
                     .font(.system(size: 9))
                     .foregroundColor(.secondary)
 
                 Spacer()
 
-                Text("\(weeksLived)")
-                    .font(.system(size: 12, weight: .semibold))
-                    .monospacedDigit()
-                Text("weeks lived")
-                    .font(.system(size: 8))
-                    .foregroundColor(.secondary)
-
-                Spacer()
-
-                Text("\(lifeData.weeksRemaining)")
-                    .font(.system(size: 12, weight: .semibold))
-                    .monospacedDigit()
-                Text("weeks left")
-                    .font(.system(size: 8))
-                    .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("\(weeksLived)")
+                            .font(.system(size: 13, weight: .semibold))
+                            .monospacedDigit()
+                        Text("weeks lived")
+                            .font(.system(size: 8))
+                            .foregroundColor(.secondary)
+                    }
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("\(lifeData.weeksRemaining)")
+                            .font(.system(size: 13, weight: .semibold))
+                            .monospacedDigit()
+                        Text("weeks left")
+                            .font(.system(size: 8))
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
-            .frame(width: 76)
+            .frame(width: 80)
 
             // Right: Weeks grid — 52 columns, rows grouped by decade
             // Uses Canvas instead of thousands of SwiftUI views to stay within widget rendering limits
@@ -184,11 +187,11 @@ struct MediumWidgetView: View {
                 let totalYears = lifeData.lifeExpectancy
                 let decadeSpacing: CGFloat = 2
                 let cellSpacing: CGFloat = 0.5
-                let availableHeight = size.height - (CGFloat(decadeCount - 1) * decadeSpacing)
-                let totalCellRows = totalYears
-                let totalInnerSpacing = CGFloat(totalCellRows - decadeCount) * cellSpacing
-                let cellHeight = max(0.5, (availableHeight - totalInnerSpacing) / CGFloat(max(1, totalCellRows)))
-                let cellWidth = max(0.5, (size.width - (CGFloat(columns - 1) * cellSpacing)) / CGFloat(columns))
+
+                let cellWidth = max(0.5, (size.width - CGFloat(columns - 1) * cellSpacing) / CGFloat(columns))
+                let extraDecadeGaps = CGFloat(max(0, decadeCount - 1)) * (decadeSpacing - cellSpacing)
+                let innerSpacing = CGFloat(max(0, totalYears - 1)) * cellSpacing
+                let cellHeight = max(0.5, (size.height - innerSpacing - extraDecadeGaps) / CGFloat(max(1, totalYears)))
 
                 let livedShading: GraphicsContext.Shading = .color(.primary)
                 let unlivedShading: GraphicsContext.Shading = .color(Color(.systemGray5))
@@ -217,8 +220,8 @@ struct MediumWidgetView: View {
                 }
             }
         }
-        .padding(.horizontal, 4)
-        .containerBackground(.background, for: .widget)
+        .padding(.horizontal, 8)
+        .containerBackground(.fill.tertiary, for: .widget)
     }
 }
 
@@ -226,11 +229,15 @@ struct MediumWidgetView: View {
 
 struct LargeWidgetView: View {
     let lifeData: LifeData
-    
+
     private var weeksLived: Int {
         CalendarDisplayMode.weeks.unitsLived(from: lifeData.birthDate)
     }
-    
+
+    private var decades: Int {
+        (lifeData.lifeExpectancy + 9) / 10
+    }
+
     var body: some View {
         VStack(spacing: 12) {
             // Header
@@ -243,9 +250,9 @@ struct LargeWidgetView: View {
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(Int(lifeData.percentageLived * 100))%")
                         .font(.system(size: 16, weight: .bold))
@@ -254,32 +261,49 @@ struct LargeWidgetView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            
-            // Weeks grid (52 columns = 1 year per row)
-            let columns = 52
-            let rows = lifeData.lifeExpectancy
-            let totalWeeks = rows * columns
-            
+
+            // Weeks grid (52 columns, rows grouped by decade)
             // Uses Canvas instead of thousands of SwiftUI views to stay within widget rendering limits
             Canvas { context, size in
-                let spacing: CGFloat = 0.5
-                let widthBasedSize = (size.width - (CGFloat(columns - 1) * spacing)) / CGFloat(columns)
-                let heightBasedSize = (size.height - (CGFloat(rows - 1) * spacing)) / CGFloat(rows)
-                let dotSize = min(widthBasedSize, heightBasedSize)
+                let columns = 52
+                let totalYears = lifeData.lifeExpectancy
+                let decadeCount = decades
+                let decadeSpacing: CGFloat = 3
+                let cellSpacing: CGFloat = 0.5
+
+                // Size width and height independently so the grid fills the entire canvas
+                let cellWidth = max(0.5, (size.width - CGFloat(columns - 1) * cellSpacing) / CGFloat(columns))
+                let extraDecadeGaps = CGFloat(max(0, decadeCount - 1)) * (decadeSpacing - cellSpacing)
+                let innerSpacing = CGFloat(max(0, totalYears - 1)) * cellSpacing
+                let cellHeight = max(0.5, (size.height - innerSpacing - extraDecadeGaps) / CGFloat(max(1, totalYears)))
 
                 let livedShading: GraphicsContext.Shading = .color(.primary)
                 let unlivedShading: GraphicsContext.Shading = .color(Color(.systemGray5))
 
-                for index in 0..<totalWeeks {
-                    let col = index % columns
-                    let row = index / columns
-                    let x = CGFloat(col) * (dotSize + spacing)
-                    let y = CGFloat(row) * (dotSize + spacing)
-                    let rect = CGRect(x: x, y: y, width: dotSize, height: dotSize)
-                    context.fill(Path(rect), with: index < weeksLived ? livedShading : unlivedShading)
+                var yOffset: CGFloat = 0
+
+                for decade in 0..<decadeCount {
+                    let yearsInDecade = min(10, totalYears - decade * 10)
+
+                    for yearInDecade in 0..<yearsInDecade {
+                        let year = decade * 10 + yearInDecade
+
+                        for week in 0..<columns {
+                            let index = year * columns + week
+                            let x = CGFloat(week) * (cellWidth + cellSpacing)
+                            let rect = CGRect(x: x, y: yOffset, width: cellWidth, height: cellHeight)
+                            context.fill(Path(rect), with: index < weeksLived ? livedShading : unlivedShading)
+                        }
+
+                        yOffset += cellHeight + cellSpacing
+                    }
+
+                    if decade < decadeCount - 1 {
+                        yOffset += decadeSpacing - cellSpacing
+                    }
                 }
             }
-            
+
             // Footer stats
             HStack(spacing: 24) {
                 statItem(value: "\(Int(lifeData.currentAge))", label: "Age")
@@ -289,7 +313,7 @@ struct LargeWidgetView: View {
         }
         .containerBackground(.fill.tertiary, for: .widget)
     }
-    
+
     private func statItem(value: String, label: String) -> some View {
         VStack(spacing: 2) {
             Text(value)
