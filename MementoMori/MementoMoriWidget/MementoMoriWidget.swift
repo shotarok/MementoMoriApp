@@ -159,16 +159,16 @@ struct MediumWidgetView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     VStack(alignment: .leading, spacing: 1) {
-                        Text("\(weeksLived)")
-                            .font(.system(size: 13, weight: .semibold))
+                        Text(String(weeksLived))
+                            .font(.system(size: 14, weight: .bold))
                             .monospacedDigit()
                         Text("weeks lived")
                             .font(.system(size: 8))
                             .foregroundColor(.secondary)
                     }
                     VStack(alignment: .leading, spacing: 1) {
-                        Text("\(lifeData.weeksRemaining)")
-                            .font(.system(size: 13, weight: .semibold))
+                        Text(String(lifeData.weeksRemaining))
+                            .font(.system(size: 14, weight: .bold))
                             .monospacedDigit()
                         Text("weeks left")
                             .font(.system(size: 8))
@@ -204,11 +204,14 @@ struct MediumWidgetView: View {
                     for yearInDecade in 0..<yearsInDecade {
                         let year = decade * yearsPerDecade + yearInDecade
 
+                        let dotSize = min(cellWidth, cellHeight)
+
                         for week in 0..<columns {
                             let index = year * columns + week
-                            let x = CGFloat(week) * (cellWidth + cellSpacing)
-                            let rect = CGRect(x: x, y: yOffset, width: cellWidth, height: cellHeight)
-                            context.fill(Path(rect), with: index < weeksLived ? livedShading : unlivedShading)
+                            let x = CGFloat(week) * (cellWidth + cellSpacing) + (cellWidth - dotSize) / 2
+                            let y = yOffset + (cellHeight - dotSize) / 2
+                            let square = CGRect(x: x, y: y, width: dotSize, height: dotSize)
+                            context.fill(Path(ellipseIn: square), with: index < weeksLived ? livedShading : unlivedShading)
                         }
 
                         yOffset += cellHeight + cellSpacing
@@ -256,7 +259,7 @@ struct LargeWidgetView: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(Int(lifeData.percentageLived * 100))%")
                         .font(.system(size: 16, weight: .bold))
-                    Text("\(weeksLived) / \(lifeData.totalWeeks) weeks")
+                    Text("\(String(weeksLived)) / \(String(lifeData.totalWeeks)/) weeks")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                 }
@@ -288,11 +291,14 @@ struct LargeWidgetView: View {
                     for yearInDecade in 0..<yearsInDecade {
                         let year = decade * 10 + yearInDecade
 
+                        let dotSize = min(cellWidth, cellHeight)
+
                         for week in 0..<columns {
                             let index = year * columns + week
-                            let x = CGFloat(week) * (cellWidth + cellSpacing)
-                            let rect = CGRect(x: x, y: yOffset, width: cellWidth, height: cellHeight)
-                            context.fill(Path(rect), with: index < weeksLived ? livedShading : unlivedShading)
+                            let x = CGFloat(week) * (cellWidth + cellSpacing) + (cellWidth - dotSize) / 2
+                            let y = yOffset + (cellHeight - dotSize) / 2
+                            let square = CGRect(x: x, y: y, width: dotSize, height: dotSize)
+                            context.fill(Path(ellipseIn: square), with: index < weeksLived ? livedShading : unlivedShading)
                         }
 
                         yOffset += cellHeight + cellSpacing
