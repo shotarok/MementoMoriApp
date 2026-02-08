@@ -12,8 +12,9 @@ A SwiftUI iOS app and widget that displays your life as a visual grid — in wee
 ## Project Structure
 
 ```
-MementoMoriWidget/
+MementoMoriApp/
 ├── MementoMori.xcodeproj/
+├── README.md
 └── MementoMori/
     ├── MementoMoriApp.swift          # App entry point
     ├── ContentView.swift              # Main app UI with settings
@@ -61,9 +62,9 @@ Select your development team for both targets in Signing & Capabilities.
 
 | Size | Display | Description |
 |------|---------|-------------|
-| Small | Years grid (10x9) | Quick glance at life in years |
-| Medium | Weeks grid grouped by decade + stats | Percentage lived, weeks lived/remaining |
-| Large | Full weeks grid (52 columns) | Complete life calendar in weeks |
+| Small | Years grid (10x9 circles) | Quick glance at life in years |
+| Medium | Weeks dot grid grouped by decade + stats | Percentage lived, weeks lived/remaining |
+| Large | Full weeks dot grid (52 columns) | Complete life calendar in weeks |
 | Lock Screen (Circular) | Gauge | Percentage of life as ring |
 | Lock Screen (Rectangular) | Progress bar | Weeks remaining |
 | Lock Screen (Inline) | Text | "⏳ X weeks left" |

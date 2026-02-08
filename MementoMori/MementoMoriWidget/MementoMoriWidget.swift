@@ -259,7 +259,7 @@ struct LargeWidgetView: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(Int(lifeData.percentageLived * 100))%")
                         .font(.system(size: 16, weight: .bold))
-                    Text("\(String(weeksLived)) / \(String(lifeData.totalWeeks)/) weeks")
+                    Text("\(String(weeksLived)) / \(String(lifeData.totalWeeks)) weeks")
                         .font(.system(size: 9))
                         .foregroundColor(.secondary)
                 }
