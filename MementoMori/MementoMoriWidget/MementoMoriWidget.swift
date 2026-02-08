@@ -149,8 +149,10 @@ struct MediumWidgetView: View {
 
                 Spacer()
 
-                Text("\(Int(lifeData.percentageLived * 100))%")
-                    .font(.system(size: 24, weight: .bold))
+                Text("\(lifeData.formattedPercentageLived)%")
+                    .font(.system(size: CGFloat(24 - 2 * lifeData.decimalPlaces), weight: .bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                 Text("lived")
                     .font(.system(size: 9))
                     .foregroundColor(.secondary)
@@ -257,7 +259,7 @@ struct LargeWidgetView: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(Int(lifeData.percentageLived * 100))%")
+                    Text("\(lifeData.formattedPercentageLived)%")
                         .font(.system(size: 16, weight: .bold))
                     Text("\(String(weeksLived)) / \(String(lifeData.totalWeeks)) weeks")
                         .font(.system(size: 9))
