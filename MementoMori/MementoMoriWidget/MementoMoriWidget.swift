@@ -150,7 +150,9 @@ struct MediumWidgetView: View {
                 Spacer()
 
                 Text("\(lifeData.formattedPercentageLived)%")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.system(size: CGFloat(24 - 2 * lifeData.decimalPlaces), weight: .bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                 Text("lived")
                     .font(.system(size: 9))
                     .foregroundColor(.secondary)
