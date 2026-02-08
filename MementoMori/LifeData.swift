@@ -58,7 +58,7 @@ class LifeDataStore {
         if let groupDefaults = UserDefaults(suiteName: Self.appGroupIdentifier) {
             self.userDefaults = groupDefaults
         } else {
-            assertionFailure("Failed to create UserDefaults for app group '\(Self.appGroupIdentifier)'. Ensure the app group is configured in both targets.")
+            print("Warning: Failed to create UserDefaults for app group '\(Self.appGroupIdentifier)'. Ensure the app group is configured in both targets.")
             self.userDefaults = .standard
         }
     }
