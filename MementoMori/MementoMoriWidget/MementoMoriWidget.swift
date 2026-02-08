@@ -175,37 +175,44 @@ struct MediumWidgetView: View {
             }
             .frame(width: 76)
 
-            // Right: Weeks grid — 52 columns, 80 rows grouped by decade
-            GeometryReader { geometry in
+            // Right: Weeks grid — 52 columns, rows grouped by decade
+            // Uses Canvas instead of thousands of SwiftUI views to stay within widget rendering limits
+            Canvas { context, size in
                 let columns = 52
                 let yearsPerDecade = 10
                 let decadeCount = decades
                 let totalYears = lifeData.lifeExpectancy
                 let decadeSpacing: CGFloat = 2
                 let cellSpacing: CGFloat = 0.5
-                let availableHeight = geometry.size.height - (CGFloat(decadeCount - 1) * decadeSpacing)
+                let availableHeight = size.height - (CGFloat(decadeCount - 1) * decadeSpacing)
                 let totalCellRows = totalYears
                 let totalInnerSpacing = CGFloat(totalCellRows - decadeCount) * cellSpacing
-                let cellHeight = (availableHeight - totalInnerSpacing) / CGFloat(totalCellRows)
-                let cellWidth = (geometry.size.width - (CGFloat(columns - 1) * cellSpacing)) / CGFloat(columns)
+                let cellHeight = max(0.5, (availableHeight - totalInnerSpacing) / CGFloat(max(1, totalCellRows)))
+                let cellWidth = max(0.5, (size.width - (CGFloat(columns - 1) * cellSpacing)) / CGFloat(columns))
 
-                VStack(spacing: decadeSpacing) {
-                    ForEach(0..<decadeCount, id: \.self) { decade in
-                        let yearsInDecade = min(yearsPerDecade, totalYears - decade * yearsPerDecade)
+                let livedShading: GraphicsContext.Shading = .color(.primary)
+                let unlivedShading: GraphicsContext.Shading = .color(Color(.systemGray5))
 
-                        VStack(spacing: cellSpacing) {
-                            ForEach(0..<yearsInDecade, id: \.self) { yearInDecade in
-                                let year = decade * yearsPerDecade + yearInDecade
-                                HStack(spacing: cellSpacing) {
-                                    ForEach(0..<columns, id: \.self) { week in
-                                        let index = year * columns + week
-                                        Rectangle()
-                                            .fill(index < weeksLived ? Color.primary : Color(.systemGray5))
-                                            .frame(width: cellWidth, height: cellHeight)
-                                    }
-                                }
-                            }
+                var yOffset: CGFloat = 0
+
+                for decade in 0..<decadeCount {
+                    let yearsInDecade = min(yearsPerDecade, totalYears - decade * yearsPerDecade)
+
+                    for yearInDecade in 0..<yearsInDecade {
+                        let year = decade * yearsPerDecade + yearInDecade
+
+                        for week in 0..<columns {
+                            let index = year * columns + week
+                            let x = CGFloat(week) * (cellWidth + cellSpacing)
+                            let rect = CGRect(x: x, y: yOffset, width: cellWidth, height: cellHeight)
+                            context.fill(Path(rect), with: index < weeksLived ? livedShading : unlivedShading)
                         }
+
+                        yOffset += cellHeight + cellSpacing
+                    }
+
+                    if decade < decadeCount - 1 {
+                        yOffset += decadeSpacing - cellSpacing
                     }
                 }
             }
@@ -253,21 +260,23 @@ struct LargeWidgetView: View {
             let rows = lifeData.lifeExpectancy
             let totalWeeks = rows * columns
             
-            GeometryReader { geometry in
+            // Uses Canvas instead of thousands of SwiftUI views to stay within widget rendering limits
+            Canvas { context, size in
                 let spacing: CGFloat = 0.5
-                let widthBasedSize = (geometry.size.width - (CGFloat(columns - 1) * spacing)) / CGFloat(columns)
-                let heightBasedSize = (geometry.size.height - (CGFloat(rows - 1) * spacing)) / CGFloat(rows)
+                let widthBasedSize = (size.width - (CGFloat(columns - 1) * spacing)) / CGFloat(columns)
+                let heightBasedSize = (size.height - (CGFloat(rows - 1) * spacing)) / CGFloat(rows)
                 let dotSize = min(widthBasedSize, heightBasedSize)
 
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.fixed(dotSize), spacing: spacing), count: columns),
-                    spacing: spacing
-                ) {
-                    ForEach(0..<totalWeeks, id: \.self) { index in
-                        Rectangle()
-                            .fill(index < weeksLived ? Color.primary : Color(.systemGray5))
-                            .frame(width: dotSize, height: dotSize)
-                    }
+                let livedShading: GraphicsContext.Shading = .color(.primary)
+                let unlivedShading: GraphicsContext.Shading = .color(Color(.systemGray5))
+
+                for index in 0..<totalWeeks {
+                    let col = index % columns
+                    let row = index / columns
+                    let x = CGFloat(col) * (dotSize + spacing)
+                    let y = CGFloat(row) * (dotSize + spacing)
+                    let rect = CGRect(x: x, y: y, width: dotSize, height: dotSize)
+                    context.fill(Path(rect), with: index < weeksLived ? livedShading : unlivedShading)
                 }
             }
             
