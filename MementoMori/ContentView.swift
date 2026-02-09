@@ -44,6 +44,11 @@ struct ContentView: View {
                 statItem(value: "\(lifeData.weeksLived)", label: "Weeks Lived")
                 statItem(value: "\(lifeData.weeksRemaining)", label: "Weeks Left")
             }
+
+            HStack(spacing: 32) {
+                statItem(value: "\(lifeData.daysLived)", label: "Days Lived")
+                statItem(value: "\(lifeData.daysRemaining)", label: "Days Left")
+            }
             
             // Progress bar
             VStack(spacing: 8) {

@@ -20,16 +20,11 @@ struct MementoMoriProvider: TimelineProvider {
         // Create entry for current state
         let entry = MementoMoriEntry(date: currentDate, lifeData: lifeData)
         
-        // Refresh at the start of next calendar week (Monday)
+        // Refresh at the start of next day so percentage updates daily
         let calendar = Calendar.current
-        let startOfNextWeek: Date = {
-            var nextMonday = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: currentDate)
-            nextMonday.weekOfYear = (nextMonday.weekOfYear ?? 1) + 1
-            nextMonday.weekday = calendar.firstWeekday
-            return calendar.date(from: nextMonday) ?? calendar.date(byAdding: .weekOfYear, value: 1, to: currentDate) ?? currentDate
-        }()
-        
-        let timeline = Timeline(entries: [entry], policy: .after(startOfNextWeek))
+        let startOfNextDay = calendar.startOfDay(for: calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate)
+
+        let timeline = Timeline(entries: [entry], policy: .after(startOfNextDay))
         completion(timeline)
     }
 }
