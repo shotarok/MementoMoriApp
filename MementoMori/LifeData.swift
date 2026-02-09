@@ -33,6 +33,10 @@ struct LifeData: Codable {
     
     // MARK: - Calculations
 
+    // NOTE: totalWeeks (lifeExpectancy * 52 = 29120 days for 80y) and totalDays
+    // (lifeExpectancy * 365.25 = 29220 days for 80y) use different approximations,
+    // resulting in a ~100-day difference for 80 years. totalWeeks is used for the
+    // calendar grid display, while totalDays is used for the percentage calculation.
     var totalWeeks: Int {
         lifeExpectancy * 52
     }
