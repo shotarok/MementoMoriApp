@@ -32,24 +32,43 @@ struct LifeData: Codable {
     }
     
     // MARK: - Calculations
-    
+
+    // NOTE: totalWeeks (lifeExpectancy * 52 = 29120 days for 80y) and totalDays
+    // (lifeExpectancy * 365.25 = 29220 days for 80y) use different approximations,
+    // resulting in a ~100-day difference for 80 years. totalWeeks is used for the
+    // calendar grid display, while totalDays is used for the percentage calculation.
     var totalWeeks: Int {
         lifeExpectancy * 52
     }
-    
+
     var weeksLived: Int {
         let calendar = Calendar.current
         let days = calendar.dateComponents([.day], from: birthDate, to: Date()).day ?? 0
         return max(0, days / 7)
     }
-    
+
     var weeksRemaining: Int {
         max(0, totalWeeks - weeksLived)
     }
-    
+
+    var totalDays: Int {
+        Int(Double(lifeExpectancy) * 365.25)
+    }
+
+    var daysLived: Int {
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day], from: birthDate, to: Date()).day ?? 0
+        return max(0, days)
+    }
+
+    var daysRemaining: Int {
+        max(0, totalDays - daysLived)
+    }
+
+    /// Percentage of life lived, calculated based on days for daily granularity.
     var percentageLived: Double {
-        guard totalWeeks > 0 else { return 0 }
-        return min(1.0, Double(weeksLived) / Double(totalWeeks))
+        guard totalDays > 0 else { return 0 }
+        return min(1.0, Double(daysLived) / Double(totalDays))
     }
 
     var formattedPercentageLived: String {

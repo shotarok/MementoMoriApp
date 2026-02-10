@@ -4,8 +4,8 @@ A SwiftUI iOS app and widget that displays your life as a visual grid — in wee
 
 ## Features
 
-- **Main App**: Configure your birthdate and life expectancy, preview the calendar in weeks, months, or years
-- **Widgets**: Small, Medium, and Large home screen widgets plus Lock Screen widgets
+- **Main App**: Configure your birthdate and life expectancy, preview the calendar in weeks, months, or years. Displays days lived/remaining and a day-based progress percentage
+- **Widgets**: Small, Medium, and Large home screen widgets plus Lock Screen widgets (refresh daily for up-to-date progress)
 - **Shared Data**: App and widgets share data via App Groups
 - **Light/Dark App Icon**: Hourglass icon that adapts to system appearance
 
@@ -15,18 +15,20 @@ A SwiftUI iOS app and widget that displays your life as a visual grid — in wee
 MementoMoriApp/
 ├── MementoMori.xcodeproj/
 ├── README.md
-└── MementoMori/
-    ├── MementoMoriApp.swift          # App entry point
-    ├── ContentView.swift              # Main app UI with settings
-    ├── LifeData.swift                 # Shared data model (used by app + widget)
-    ├── Assets.xcassets/               # App icons (light/dark) and colors
-    ├── MementoMori.entitlements
-    └── MementoMoriWidget/
-        ├── MementoMoriWidgetBundle.swift  # Widget entry point
-        ├── MementoMoriWidget.swift        # Widget views for all sizes
-        ├── Info.plist                     # Widget extension config
-        ├── Assets.xcassets/
-        └── MementoMoriWidgetExtension.entitlements
+├── MementoMori/
+│   ├── MementoMoriApp.swift          # App entry point
+│   ├── ContentView.swift              # Main app UI with settings
+│   ├── LifeData.swift                 # Shared data model (used by app + widget)
+│   ├── Assets.xcassets/               # App icons (light/dark) and colors
+│   ├── MementoMori.entitlements
+│   └── MementoMoriWidget/
+│       ├── MementoMoriWidgetBundle.swift  # Widget entry point
+│       ├── MementoMoriWidget.swift        # Widget views for all sizes
+│       ├── Info.plist                     # Widget extension config
+│       ├── Assets.xcassets/
+│       └── MementoMoriWidgetExtension.entitlements
+└── MementoMoriTests/
+    └── LifeDataTests.swift            # Unit tests for LifeData calculations
 ```
 
 ## Setup Instructions
@@ -68,6 +70,10 @@ Select your development team for both targets in Signing & Capabilities.
 | Lock Screen (Circular) | Gauge | Percentage of life as ring |
 | Lock Screen (Rectangular) | Progress bar | Weeks remaining |
 | Lock Screen (Inline) | Text | "⏳ X weeks left" |
+
+## Testing
+
+The project includes a `MementoMoriTests` target with tests for `LifeData` calculations (total days, days lived/remaining, percentage progress, edge cases, and formatted output). Run tests in Xcode with **Cmd+U** or via `xcodebuild test`.
 
 ## Requirements
 
